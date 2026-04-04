@@ -31,26 +31,24 @@ public class CartController {
 		
 		List<CartItemResponse> responseList = cartService.getAllCartItems( userId );
 		
-		return responseList.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok().body(responseList);
+		return  ResponseEntity.ok().body(responseList);
 		
 	}
 	
 	@PostMapping
 	public ResponseEntity<String> addToCart(@RequestHeader("X-User-ID") String userId, @RequestBody CartItemRequest request) {
 		
- 
-		return cartService.addToCart(userId , request)  ? 
-				ResponseEntity.status(HttpStatus.CREATED).build() :
-			    ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product out of stockor User is not found or product not found");
- 
+		cartService.addToCart(userId, request);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body("Item added to cart successfully");
 	} 
 	
 	@DeleteMapping("/items/{productId}")
 	public ResponseEntity<Void> removeFromCart(@RequestHeader("X-User-ID") String userId , @PathVariable Long productId) {
 		
-		boolean deleted = cartService.removeFromCart(userId , productId);
+		cartService.removeFromCart(userId , productId);
 		
-		return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+		return ResponseEntity.noContent().build();
 		
 		
 	}

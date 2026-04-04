@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.app.ecom.dto.CartItemRequest;
 import com.app.ecom.dto.CartItemResponse;
+import com.app.ecom.exception.InsufficientStockException;
+import com.app.ecom.exception.ResourceNotFoundException;
 import com.app.ecom.model.CartItem;
 import com.app.ecom.model.Product;
 import com.app.ecom.model.User;
@@ -28,68 +30,59 @@ public class CartService {
 	private final UserRepository userRepository;
 	private final ProductRepository productRepository;
 	
-	public boolean addToCart(String userId, CartItemRequest request) {
-		Optional<Product> productOpt = productRepository.findById(request.getProductId());
+	public void addToCart(String userId, CartItemRequest request) {
+		Product product = productRepository.findById(request.getProductId())
+				.orElseThrow(() -> new ResourceNotFoundException("product not found with id: " + request.getProductId()));
+	
+		if(!(product.getStockQuantity() > 0)) {
+			
+			throw new InsufficientStockException("Product is out of stock");
+		}
+			 
+		User user = userRepository.findById(Long.valueOf(userId))
+				.orElseThrow(() -> new ResourceNotFoundException("user not found with id : " + userId));
+				
+		 CartItem  cartItem = cartRepository.findByUserAndProduct(user , product);
 		
-		if(productOpt.isEmpty())
-			return false;
-		Product product = productOpt.get();
-		
-		if(! (product.getStockQuantity() > 0)) 
-			return false;
-		
-		Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
-		if(userOpt.isEmpty())
-			return false;
-		
-		User user = userOpt.get();
-		
-		 CartItem  existingCartItem = cartRepository.findByUserAndProduct(user , product);
-		
-		if(existingCartItem != null) {
-		   existingCartItem.setQuantity(existingCartItem.getQuantity() + request.getQuantity());
-		   existingCartItem.setPrice(product.getPrice().multiply(BigDecimal.valueOf(existingCartItem.getQuantity())));
-		   cartRepository.save(existingCartItem);
+		if(cartItem != null) {
+			cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
 		}
 		else {
-			CartItem cartItem = new CartItem();
-			cartItem.setUser(user);
-			cartItem.setProduct(product);
-			cartItem.setQuantity(request.getQuantity());
-			cartItem.setPrice(product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-			 
-			cartRepository.save(cartItem);
+			cartItem = new CartItem();
+	        cartItem.setUser(user);
+	        cartItem.setProduct(product);
+	        cartItem.setQuantity(request.getQuantity());
 		}
 		
-		return true;	}
+		BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+	    cartItem.setPrice(totalPrice);
+	    
+	    cartRepository.save(cartItem);
+		
+	}
 
-	public boolean removeFromCart(String userId, Long productId) {
-		 Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
-		 Optional<Product> productOpt  = productRepository.findById(productId);
-		 
-		 if(userOpt.isPresent() && productOpt.isPresent()) {
-			 cartRepository.deleteByUserAndProduct(userOpt.get() , productOpt.get());
-			 return true;
-			 
-		 }
-		 
-		 return false;
+	public void removeFromCart(String userId, Long productId) {
+		 User user  = userRepository.findById(Long.valueOf(userId))
+				 .orElseThrow(() -> new ResourceNotFoundException("user not found with id : " + userId));
+		 Product product  = productRepository.findById(productId)
+				 .orElseThrow(() -> new ResourceNotFoundException("product not found with id: " + productId));
+	 
+		 cartRepository.deleteByUserAndProduct(user , product);
 		 
 	}
 	
 	public List<CartItemResponse> getAllCartItems(String userId) {
-		
-		
-		
-		Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
-		
-		if(userOpt.isEmpty()) return Collections.emptyList();
+		 
+		 User user  = userRepository.findById(Long.valueOf(userId))
+				 .orElseThrow(() -> new ResourceNotFoundException("user not found with id : " + userId));
 	
-		return cartRepository.findByUser(userOpt.get())
+		return cartRepository.findByUser(user)
 				.stream()
 				.map(this::mapCartItemToResponse)
 				.collect(Collectors.toList()); 
 	}
+	
+	 
 	
 	public CartItemResponse mapCartItemToResponse(CartItem item) {
 		CartItemResponse response = new CartItemResponse();

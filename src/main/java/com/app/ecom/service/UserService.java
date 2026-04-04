@@ -1,7 +1,6 @@
 package com.app.ecom.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -9,11 +8,11 @@ import org.springframework.stereotype.Service;
 import com.app.ecom.dto.AddressDTO;
 import com.app.ecom.dto.UserRequest;
 import com.app.ecom.dto.UserResponse;
+import com.app.ecom.exception.ResourceNotFoundException;
 import com.app.ecom.model.Address;
 import com.app.ecom.model.User;
 import com.app.ecom.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
  
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	
-	//private Long id = 1L;
+
 	
 	public List<UserResponse> getAllUsers() {
 		
@@ -34,9 +33,11 @@ public class UserService {
 		
 	}
 	
-	public Optional<UserResponse> getSingleUser(Long id) {
+	public UserResponse getSingleUser(Long id) {
 		
-		return userRepository.findById(id).map(this::mapUserToUserResponse);
+		return userRepository.findById(id)
+				.map(this::mapUserToUserResponse)
+				.orElseThrow(() -> new ResourceNotFoundException("user not found"));
 	}
 	
 	public void addUser(UserRequest userRequest) {
@@ -64,13 +65,15 @@ public class UserService {
 		
 	}
 
-	public boolean updateUser(Long id , UserRequest updatedUserRequest) {
-		 return userRepository.findById(id)
-				 .map(existingUser -> { 
-					 updateUserFromRequest(existingUser , updatedUserRequest);
-					 userRepository.save(existingUser);
-					 return true;
-							 }).orElse(false);
+	public UserResponse updateUser(Long id , UserRequest updatedUserRequest) {
+		 User user = userRepository.findById(id)
+		   .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+		   
+		    updateUserFromRequest(user , updatedUserRequest);
+		   
+		 User savedUser = userRepository.save(user);
+		 
+		 return mapUserToUserResponse(savedUser);
 	} 
 	
 	public UserResponse mapUserToUserResponse(User user) {

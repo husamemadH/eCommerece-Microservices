@@ -2,6 +2,7 @@ package com.app.ecom.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecom.dto.UserRequest;
 import com.app.ecom.dto.UserResponse;
-import com.app.ecom.model.User;
 import com.app.ecom.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
-	
+ 
 	private final UserService userService;
-	
-	
-	
-	
+ 	
 	@GetMapping("/api/users")
 	public ResponseEntity<List<UserResponse>> getAllUsers() {
 		
@@ -35,29 +31,30 @@ public class UserController {
 	}
 	
 	@GetMapping("/api/users/{id}")
-	public  ResponseEntity<UserResponse>  getSinglelUsers(@PathVariable Long id) {
+	public  ResponseEntity<UserResponse>  getSinglelUser(@PathVariable Long id) {
 		
-		 return userService.getSingleUser(id)
-				 .map(user -> ResponseEntity.ok(user))
-				 .orElse(ResponseEntity.notFound().build());
-		 
-		
-		 
-	}
+		  UserResponse userResponse = userService.getSingleUser(id);
+		  
+		  return ResponseEntity.ok(userResponse);
+ 			 
+ 	}
 	
 	@PostMapping("/api/users")
-	public void addUser(@RequestBody UserRequest userRequest) {
-		
-		
+	public ResponseEntity<Void> addUser(@RequestBody UserRequest userRequest) {
+	 
 		userService.addUser(userRequest);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	
 	}
 	
 	@PutMapping("/api/users/{id}")
 	
-	public ResponseEntity<UserRequest> updateUser(@PathVariable Long id , @RequestBody UserRequest userRequest) {
+	public ResponseEntity<UserResponse> updateUser(@PathVariable Long id , @RequestBody UserRequest userRequest) {
 		
-		return userService.updateUser(id , userRequest) ? ResponseEntity.ok(userRequest) : ResponseEntity.notFound().build();
+		UserResponse updatedUserResponse = userService.updateUser(id , userRequest);
+		  
+		 return ResponseEntity.ok(updatedUserResponse);
 		
 	}
 }

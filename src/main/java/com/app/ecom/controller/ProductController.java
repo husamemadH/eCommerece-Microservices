@@ -29,6 +29,7 @@ public class ProductController {
 	
 	@GetMapping
 	public ResponseEntity<List<ProductResponse>> getProducts() {
+		
 		return ResponseEntity.ok(productService.getAllProducts());
 	}
 	
@@ -42,15 +43,18 @@ public class ProductController {
 	@PutMapping("{id}")
 	public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id ,@RequestBody ProductRequest productRequest) {
 		
-		return productService.updateProduct(id, productRequest)
-				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+		 ProductResponse productResponse = productService.updateProduct(id, productRequest);
+		 
+		 return ResponseEntity.ok(productResponse);
+				 
 	}
 	
 	@DeleteMapping("{id}")
-	public ResponseEntity<Void> deleteProduct(@PathVariable Long id  ) {
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long id ) {
 		
-		return productService.deleteProduct(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+		productService.deleteProduct(id); 
+				
+		return ResponseEntity.noContent().build();
 	}
 	
 	@GetMapping("/search")
