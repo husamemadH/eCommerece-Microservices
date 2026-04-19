@@ -31,7 +31,7 @@ public class UserController {
   }
 
   @GetMapping("/api/users/{id}")
-  public ResponseEntity<UserResponse> getSinglelUser(@PathVariable Long id) {
+  public ResponseEntity<UserResponse> getSinglelUser(@PathVariable String id) {
 
     UserResponse userResponse = userService.getSingleUser(id);
 
@@ -50,7 +50,7 @@ public class UserController {
 
   @PutMapping("/api/users/{id}")
 
-  public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+  public ResponseEntity<UserResponse> updateUser(@PathVariable String id, @RequestBody UserRequest userRequest) {
 
     UserResponse updatedUserResponse = userService.updateUser(id, userRequest);
 

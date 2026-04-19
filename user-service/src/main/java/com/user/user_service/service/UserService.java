@@ -30,7 +30,7 @@ public class UserService {
 
   }
 
-  public UserResponse getSingleUser(Long id) {
+  public UserResponse getSingleUser(String id) {
 
     return userRepository.findById(id)
         .map(this::mapUserToUserResponse)
@@ -61,7 +61,7 @@ public class UserService {
 
   }
 
-  public UserResponse updateUser(Long id, UserRequest updatedUserRequest) {
+  public UserResponse updateUser(String id, UserRequest updatedUserRequest) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 

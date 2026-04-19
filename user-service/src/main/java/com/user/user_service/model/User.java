@@ -2,17 +2,11 @@ package com.user.user_service.model;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,32 +14,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 // @AllArgsConstructor
 // @JsonPropertyOrder({ "id", "firstName", "lastName" , "email" ,
-// "phoneNumber"})
-@Entity
-@Table(name = "user_table")
+// "phoneNumber"}
+@Document(collection = "users")
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private String id;
 
   private String firstName;
 
   private String lastName;
 
+  @Indexed(unique = true)
   private String email;
 
   private String phoneNumber;
 
   private UserRole userRole = UserRole.CUSTOMER;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "address_id")
   private Address address;
 
-  @CreationTimestamp
+  @CreatedDate
   private LocalDateTime createdAt;
 
-  @UpdateTimestamp
+  @LastModifiedDate
   private LocalDateTime updatedAt;
 }
