@@ -9,5 +9,13 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
 
+logging:
+  file:
+    name: ../logs/eureka-server.log
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
