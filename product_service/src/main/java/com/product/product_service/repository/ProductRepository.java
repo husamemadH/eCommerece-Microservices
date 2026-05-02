@@ -1,6 +1,7 @@
 package com.product.product_service.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   @Query("SELECT p FROM Product p WHERE p.active = true AND p.stockQuantity > 0 AND LOWER(p.name) LIKE LOWER(CONCAT('%' , :keyword , '%'))")
   List<Product> searchProducts(@Param("keyword") String keyword);
+
+  Optional<Product> findByIdAndActiveTrue(Long id);
 
 }

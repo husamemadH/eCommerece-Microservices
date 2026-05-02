@@ -98,6 +98,15 @@ public class ProductService {
 
   }
 
+  public ProductResponse getProduct(String id) {
+
+    Product product = productRepository.findByIdAndActiveTrue(Long.parseLong(id))
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found or is not availabe"));
+
+    return mapProductToProductResponse(product);
+
+  }
+
   public void deleteProduct(Long id) {
     /*
      * return productRepository.findById(id)

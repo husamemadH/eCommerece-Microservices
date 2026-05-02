@@ -33,3 +33,13 @@ eureka:
 
 server:
   port: 8084
+
+logging:
+  file:
+    name: ../logs/order-service.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

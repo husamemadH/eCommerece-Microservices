@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.order.order_service.client.ProductClient;
+import com.order.order_service.client.UserClient;
 import com.order.order_service.dto.CartItemRequest;
 import com.order.order_service.dto.CartItemResponse;
 import com.order.order_service.dto.ProductResponse;
+import com.order.order_service.dto.UserResponse;
 import com.order.order_service.model.CartItem;
 import com.order.order_service.repository.CartRepository;
 
@@ -25,9 +27,12 @@ public class CartService {
 
   private final ProductClient productClient;
 
+  private final UserClient userClient;
+
   public void addToCart(String userId, CartItemRequest request) {
 
     ProductResponse productResponse = productClient.getProductDetails(request.getProductId());
+    UserResponse userResponse = userClient.getUserDetails(userId);
 
     CartItem cartItem = cartRepository.findByUserIdAndProductId(userId, productResponse.getId());
 

@@ -32,3 +32,13 @@ eureka:
 
 server:
   port: 8083
+
+logging:
+  file:
+    name: ../logs/product-service.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

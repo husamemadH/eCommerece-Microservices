@@ -18,6 +18,7 @@ import com.product.product_service.dto.ProductRequest;
 import com.product.product_service.dto.ProductResponse;
 import com.product.product_service.service.ProductService;
 
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,6 +32,12 @@ public class ProductController {
   public ResponseEntity<List<ProductResponse>> getProducts() {
 
     return ResponseEntity.ok(productService.getAllProducts());
+  }
+
+  @GetMapping("{id}")
+  public ResponseEntity<ProductResponse> getProduct(@PathVariable String id) {
+
+    return ResponseEntity.ok(productService.getProduct(id));
   }
 
   @PostMapping

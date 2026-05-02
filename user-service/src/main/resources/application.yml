@@ -25,3 +25,13 @@ eureka:
 
 server:
   port: 8082
+
+logging:
+  file:
+    name: ../logs/user-service.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
