@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.order.order_service.dto.CartItemRequest;
 import com.order.order_service.dto.CartItemResponse;
+import com.order.order_service.service.CartService;
 
 import lombok.RequiredArgsConstructor;
 
