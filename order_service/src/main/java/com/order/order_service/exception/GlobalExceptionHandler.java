@@ -12,6 +12,17 @@ import com.order.order_service.dto.ErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(ProductNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "Not Found",
+            ex.getMessage(),
+            LocalDateTime.now()));
+  }
+
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
     return ResponseEntity

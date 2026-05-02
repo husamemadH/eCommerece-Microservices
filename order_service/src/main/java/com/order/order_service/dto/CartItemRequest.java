@@ -11,5 +11,4 @@ public class CartItemRequest {
 
   private Integer quantity;
 
-  private BigDecimal price;
 }
